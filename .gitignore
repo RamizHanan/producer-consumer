@@ -1,0 +1,20 @@
+# Ignore the trace directory
+trace/
+
+# Compiled Object files
+pagetable
+*.slo
+*.lo
+*.o
+*.obj
+
+# The file containing environment variables 
+.env
+
+# Ignore IDE specific files
+.vscode/
+
+# OS generated files 
+.DS_Store
+.DS_Store?
+._*
