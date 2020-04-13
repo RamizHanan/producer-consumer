@@ -4,12 +4,10 @@
 #include <stdbool.h> /* define bool */
 #include <string>
 #include <iostream>
-#include <vector>
 #include <semaphore.h>
 #include <pthread.h>
 //usleep(microseconds);
-
-#define OOPS 5
+#define BUFFER_SIZE 10
 
 using namespace std;
 
@@ -42,9 +40,6 @@ int main(int argc, char **argv)
     int lucyTimeMS = 0;
     int frogTimeMS = 0;
     int escTimeMS = 0;
-
-    std::string fileName = "";
-    bool showTrans = false;
 
     if (argc < 2)
     {
@@ -93,3 +88,36 @@ int main(int argc, char **argv)
 
 
 }
+
+class Producer{
+
+public:
+    string name;
+    int delay;
+    Producer(string name, int delay);
+    void* produce();
+
+};
+
+class Consumer{
+
+public:
+    string name;
+    int delay;
+
+    Consumer(string name, int delay);
+    void* consume();
+
+};
+
+#define BUFFER_SIZE 10
+typedef struct {
+
+
+} item;
+
+item buffer[BUFFER_SIZE];
+int in = 0;
+int out = 0;
+int esc = 0;
+int frog = 0;
