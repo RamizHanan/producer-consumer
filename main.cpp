@@ -2,10 +2,12 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdbool.h> /* define bool */
-#include <string>
 #include <iostream>
 #include <semaphore.h>
 #include <pthread.h>
+#include "producer.hpp"
+#include "consumer.hpp"
+#include ""
 //usleep(microseconds);
 #define BUFFER_SIZE 10
 
