@@ -7,7 +7,7 @@
 #include <pthread.h>
 #include "producer.hpp"
 #include "consumer.hpp"
-#include ""
+#include "dataBuffer.hpp"
 //usleep(microseconds);
 #define BUFFER_SIZE 10
 
@@ -90,36 +90,3 @@ int main(int argc, char **argv)
 
 
 }
-
-class Producer{
-
-public:
-    string name;
-    int delay;
-    Producer(string name, int delay);
-    void* produce();
-
-};
-
-class Consumer{
-
-public:
-    string name;
-    int delay;
-
-    Consumer(string name, int delay);
-    void* consume();
-
-};
-
-#define BUFFER_SIZE 10
-typedef struct {
-
-
-} item;
-
-item buffer[BUFFER_SIZE];
-int in = 0;
-int out = 0;
-int esc = 0;
-int frog = 0;
