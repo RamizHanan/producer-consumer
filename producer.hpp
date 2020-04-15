@@ -1,4 +1,5 @@
 #include <string>
+#include "dataBuffer.hpp"
 
 class Producer
 {
@@ -7,8 +8,20 @@ class Producer
 
 public:
     Producer(std::string name, int delay);
-    void *produce();
+    void *produce(void* buffer);
+    void produceCandy();
 };
+
+void* Producer::produce(void* b){
+    buffer* sharedBuff = (buffer*) b;
+    std::string candy;
+    for (;;) {
+
+    }
+
+}
+
+
 
 /*
 semaphore 3
