@@ -16,10 +16,10 @@ typedef struct thread_data {
     int totalBeltCount = 0;
     int beltFrogCount = 0;
     int beltEscCount = 0;
-} buffer;
+} buff;
 
 //initialize buffer semaphores
-void initialize_data(buffer *b) {
+void initialize_data(buff *b) {
 
     //initialize queue
     b->conveyorBelt = new std::queue<std::string>();
