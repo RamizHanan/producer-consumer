@@ -1,5 +1,8 @@
+#ifndef __CONSUMER_HPP__
+#define __CONSUMER_HPP__
+
 #include "mizzo.hpp"
-#include "dataBuffer.hpp"
+
 
 class Consumer : public Mizzo
 {
@@ -13,8 +16,6 @@ public:
     int getNumFrogConsumed(){return this->numFrogConsumed;};
 };
 
-//while(1)
-//
 /*
 -waits on full sempahore, can I consume?
 -once available , lock the buffer, consume what it needs
@@ -25,7 +26,6 @@ public:
 -print out who consumed
 */
 
-// code to be exited by threads Ethel/Lucy
 void* Consumer::consume(void* b) {
 
     // cast void* to buffer*
@@ -69,6 +69,9 @@ void* Consumer::consume(void* b) {
         //candy has been removed so a slot is empty
         sem_post(sharedBuff->empty);
 
+        if(this->delay > 0)
+            usleep(this->delay * 1000); //milliseconds
+
     }
 
 }
@@ -80,3 +83,5 @@ void Consumer::consumeCandy(std::string candy, void* b) {
     std::cout << sharedBuff->totalBeltCount << ". produced: " << sharedBuff->totalCount;
     std::cout << "\t" << this->getName() << " consumed a " << candy << "." << endl;
 }
+
+#endif __CONSUMER_HPP__

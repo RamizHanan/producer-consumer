@@ -1,23 +1,22 @@
-#include <mizzo.hpp>
-#include "dataBuffer.hpp"
+#ifndef __PRODUCER_HPP__
+#define __PRODUCER_HPP__
+
+#include "mizzo.hpp"
 
 class Producer : public Mizzo
 {
 private:
     int numEscProduced = 0;
     int numFrogProduced = 0;
+
 public:
-    void *produce(void* b);
-    void produceCandy(void* b);
-    int getNumEscProduced(){return this->numEscProduced;};
-    int getNumFrogProduced(){return this->numFrogProduced;};
+    void *produce(void *b);
+    void produceCandy(void *b);
+    int getNumEscProduced() { return this->numEscProduced; };
+    int getNumFrogProduced() { return this->numFrogProduced; };
 };
 
 /*
-semaphore 3
-semaphore 10
-lock for buffer
-
 produce function:
     1- factory waits on empty spot on conveyer belt
     2- once available, lock the buffer
@@ -28,19 +27,26 @@ produce function:
 
 */
 
-void* Producer::produce(void *b){
+void *Producer::produce(void *b)
+{
 
     // cast void* to buffer*
-    buff* sharedBuff = (buff*) b;
+    buff *sharedBuff = (buff *)b;
     // candy produced is based on the object (thread) producing it
     std::string candy = this->getName();
-    for (;;) {
+    for (;;)
+    {
+        
         //check if there are slots to place candies on
         sem_wait(sharedBuff->empty);
+
         // check if candy was a frog bite
         if (candy.compare("crunchy frog bite") == 0)
             //if a frog bite than decrement frog semaphore
             sem_wait(sharedBuff->frogEmpty);
+
+        if (this->delay > 0)
+            usleep(this->delay * 1000);;
 
         //critical section
 
@@ -51,11 +57,13 @@ void* Producer::produce(void *b){
         sharedBuff->totalBeltCount++;
         sharedBuff->totalCount++;
         // increment either candy based on the thread (object) executing
-        if (this->getName().compare("crunchy frog bite") == 0) {
+        if (this->getName().compare("crunchy frog bite") == 0)
+        {
             sharedBuff->beltFrogCount++;
             this->numFrogProduced++;
         }
-        else {
+        else
+        {
             sharedBuff->beltEscCount++;
             this->numEscProduced++;
         }
@@ -69,12 +77,14 @@ void* Producer::produce(void *b){
         //candy has been added so a slot is full
         sem_post(sharedBuff->full);
     }
-
 }
 
-void Producer::produceCandy(void* b) {
-    buff* sharedBuff = (buff*) b;
+void Producer::produceCandy(void *b)
+{
+    buff *sharedBuff = (buff *)b;
     std::cout << "Belt: " << sharedBuff->beltFrogCount << " frogs + " << sharedBuff->beltEscCount << " escargots =";
     std::cout << sharedBuff->totalBeltCount << ". produced: " << sharedBuff->totalCount;
     std::cout << "\tAdded a " << this->getName() << "." << endl;
 }
+
+#endif __PRODUCER_HPP__

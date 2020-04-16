@@ -18,7 +18,7 @@ CXXFLAGS=-std=c++11
 program_objs = main.o producer.o mizzo.o consumer.o dataBuffer.o 
 
 mizzo: $(program_objs)
-	$(CXX) $(CXXFLAGS) -o $@ $(program_objs)
+	$(CXX) $(CXXFLAGS) -o -pthread -lrt $@ $(program_objs)
 
 
 

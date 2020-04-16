@@ -1,12 +1,17 @@
 
 #ifndef __MIZZO_HPP__
 #define __MIZZO_HPP__
-
+       
+#include <unistd.h>
 #include <string>
+#include <thread>
+#include <chrono>
+#include "dataBuffer.hpp"
+
 
 class Mizzo
 {
-private:
+protected:
     std::string name;
     int delay;
     const int beltSize = 10;

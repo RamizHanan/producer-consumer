@@ -8,7 +8,7 @@
 #include "producer.hpp"
 #include "consumer.hpp"
 #include "dataBuffer.hpp"
-//usleep(microseconds);
+
 #define BUFFER_SIZE 10
 
 using namespace std;
@@ -85,8 +85,8 @@ int main(int argc, char **argv)
             exit(0);
         }
     }
-    /* first mandatory argument, optind is defined by getopt */
-    idx = optind;
+
+    
 
 
 }
