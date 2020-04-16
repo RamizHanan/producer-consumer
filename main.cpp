@@ -9,27 +9,28 @@
 #include "consumer.hpp"
 #include "dataBuffer.hpp"
 
+
 #define BUFFER_SIZE 10
 
 using namespace std;
 
 void printUsage()
 {
-    cout << "Usage:"
-         << endl
+    std::cout << "Usage:"
+         << std::endl
          << "      -E       Specifies the number of milliseconds N that the Ethel consumer requires "
          <<                 "to put a candy in the box and should be invoked each time Ethel removes a "
          <<                 "candy regardless of the candy type. You would simulate this time to consume a "
          <<                 "product (put a candy in the box) by putting the consumer thread to sleep for N "
          <<                 "milliseconds. Other consumer and producer threads (Lucy, frog bite, and "
          <<                 "escargot sucker) are handled similarly. "
-         << endl
+         << std::endl
          << "      -L       Similar argument for the Lucy consumer."
-         << endl
+         << std::endl
          << "      -f       N Specifies the number of milliseconds required to produce each crunchy frog bite."
-         << endl
+         << std::endl
          << "      -e       N Specifies the number of milliseconds required to produce each everlasting escargot sucker."
-         << endl;
+         << std::endl;
 
     cout << "Example: ./mizzo –E 3000000 –L 400000 -f 20000 -e 21134" << endl;
 }
@@ -45,8 +46,7 @@ int main(int argc, char **argv)
 
     if (argc < 2)
     {
-        cerr << "default" << endl;
-        //default setting
+        printUsage();
 
     }
 
@@ -91,4 +91,4 @@ int main(int argc, char **argv)
 
 }
 
-void production_report()
+void production_report();

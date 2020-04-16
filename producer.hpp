@@ -84,7 +84,7 @@ void Producer::produceCandy(void *b)
     buff *sharedBuff = (buff *)b;
     std::cout << "Belt: " << sharedBuff->beltFrogCount << " frogs + " << sharedBuff->beltEscCount << " escargots =";
     std::cout << sharedBuff->totalBeltCount << ". produced: " << sharedBuff->totalCount;
-    std::cout << "\tAdded a " << this->getName() << "." << endl;
+    std::cout << "\tAdded a " << this->getName() << "." << std::endl;
 }
 
-#endif __PRODUCER_HPP__
+#endif

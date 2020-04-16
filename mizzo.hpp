@@ -28,4 +28,4 @@ Mizzo::Mizzo(std::string name, int delay){
     this->delay = delay;
 }
 
-#endif __MIZZO_HPP__
+#endif

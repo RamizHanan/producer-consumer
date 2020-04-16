@@ -81,7 +81,7 @@ void Consumer::consumeCandy(std::string candy, void* b) {
     buff* sharedBuff = (buff*) b;
     std::cout << "Belt: " << sharedBuff->beltFrogCount << " frogs + " << sharedBuff->beltEscCount << " escargots =";
     std::cout << sharedBuff->totalBeltCount << ". produced: " << sharedBuff->totalCount;
-    std::cout << "\t" << this->getName() << " consumed a " << candy << "." << endl;
+    std::cout << "\t" << this->getName() << " consumed a " << candy << "." << std::endl;
 }
 
-#endif __CONSUMER_HPP__
+#endif 

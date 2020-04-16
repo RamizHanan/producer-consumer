@@ -51,4 +51,4 @@ void initialize_data(buff *b)
     }
 }
 
-#endif __DATA_BUFFER_HPP__
+#endif
