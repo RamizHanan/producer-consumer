@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 
+
 typedef struct thread_data
 {
     std::queue<std::string> *conveyorBelt;
@@ -13,9 +14,12 @@ typedef struct thread_data
     sem_t empty;
     sem_t frogEmpty;
     sem_t full;
-
-    // keep track of candy produced
-    int totalCount = 0;
+    int totalProducedCount = 0;
+    int totalConsumedCount = 0;
+    int numFrogConsumed = 0;
+    int numEscConsumed = 0;
+    int numFrogProduced = 0;
+    int numEscProduced = 0;
     int totalBeltCount = 0;
     int beltFrogCount = 0;
     int beltEscCount = 0;

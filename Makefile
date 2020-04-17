@@ -10,4 +10,4 @@ mizzo: main.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 clean:
-	rm *.o mizzo
+	rm mizzo

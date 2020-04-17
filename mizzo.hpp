@@ -8,6 +8,8 @@
 #include <chrono>
 #include "dataBuffer.hpp"
 
+using namespace std;
+
 typedef struct factory {
 
     buff* shared_buffer;

@@ -2,7 +2,7 @@
 #define __PRODUCER_HPP__
 
 #include "mizzo.hpp"
-
+#define MAX 100
 /*
 produce function:
     1- factory waits on empty spot on conveyer belt
@@ -13,24 +13,21 @@ produce function:
     6- increment semaphore of candy available
 
 */
+void* produce(void* args);
+void produceCandy(std::string candy, buff* sharedBuff);
 
 void* produce(void* args)
 {
-
     // cast void* to buffer*
     mizzo* candyType = (mizzo*) args;
     buff* sharedBuff = candyType->shared_buffer;
-
-    int numEscProduced = 0;
-    int numFrogProduced = 0;
     // candy produced is based on the object (thread) producing it
     std::string candy = candyType->name;
     int delay = candyType->delay;
-    const int beltSize = 10;
-   
-    for (;;)
+    int count = 0;
+    while(count < MAX)
     {
-        
+
         //check if there are slots to place candies on
         sem_wait(&sharedBuff->empty);
 
@@ -49,20 +46,22 @@ void* produce(void* args)
         //place candy on belt - push onto queue (enqueue)
         sharedBuff->conveyorBelt->push(candy);
         sharedBuff->totalBeltCount++;
-        sharedBuff->totalCount++;
+        sharedBuff->totalProducedCount++;
+
         // increment either candy based on the thread (object) executing
         if (candy.compare("crunchy frog bite") == 0)
         {
             sharedBuff->beltFrogCount++;
-            numFrogProduced++;
+            sharedBuff->numFrogProduced++;
         }
         else
         {
             sharedBuff->beltEscCount++;
-            numEscProduced++;
+            sharedBuff->numEscProduced++;
         }
         //print out what happens before it can change
         produceCandy(candy, sharedBuff);
+        count++;
         //buffer is done being modified
         pthread_mutex_unlock(&(sharedBuff->lock));
 
@@ -70,13 +69,14 @@ void* produce(void* args)
 
         //candy has been added so a slot is full
         sem_post(&sharedBuff->full);
+
     }
 }
 
 void produceCandy(std::string candy, buff* sharedBuff)
 {
-    std::cout << "Belt: " << sharedBuff->beltFrogCount << " frogs + " << sharedBuff->beltEscCount << " escargots =";
-    std::cout << sharedBuff->totalBeltCount << ". produced: " << sharedBuff->totalCount;
+    std::cout << "Belt: " << sharedBuff->beltFrogCount << " frogs + " << sharedBuff->beltEscCount << " escargots = ";
+    std::cout << sharedBuff->totalBeltCount << ". produced: " << sharedBuff->totalProducedCount;
     std::cout << "\tAdded a " << candy << "." << std::endl;
 }
 

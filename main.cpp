@@ -12,6 +12,9 @@
 #define BUFFER_SIZE 10
 
 using namespace std;
+void initialize_data(buff *b);
+void printUsage();
+void produceReport();
 
 void printUsage()
 {
@@ -33,9 +36,6 @@ void printUsage()
 
     cout << "Example: ./mizzo –E 3000000 –L 400000 -f 20000 -e 21134" << endl;
 }
-
-typedef void* (*PRODUCE)(void*);
-typedef void* (*CONSUME)(void*);
 
 int main(int argc, char **argv)
 {
@@ -124,12 +124,18 @@ int main(int argc, char **argv)
     pthread_create(&lucy_, NULL, consume, (void *) lucy);
     pthread_create(&ethel_, NULL, consume, (void *) ethel);
 
+    pthread_join(frogGen,NULL);
+    pthread_join(escGen,NULL);
+    pthread_join(lucy_,NULL);
+    pthread_join(ethel_,NULL);
+
+    std::cout << "Mizzo produced: " << buffer->numEscProduced << "escargot suckers. wow!" << endl;
+    std::cout << "Mizzo produced: " << buffer->numFrogProduced << "Cruncy Frog bites. wow!" << endl;
     //crunchy
     //escargot
     //lucy
     //ethel
 }
-
 //initialize buffer semaphores
 void initialize_data(buff *b)
 {
@@ -153,11 +159,10 @@ void initialize_data(buff *b)
     }
 
     //initialize full semaphore to 0
-    if (sem_init(&b->empty, 0, 0) == -1)
+    if (sem_init(&b->full, 0, 0) == -1)
     {
         fprintf(stderr, "Could not initialize \"full\" semaphore. Exiting.\n");
         exit(0);
     }
 }
 
-void production_report();
