@@ -22,8 +22,7 @@ void* consume(void* args) {
     int delay = worker->delay;
     // declare candy, will be initialized based on what gets popped off the queue
     std::string candy;
-    int count = 0;
-    while(count < MAX){    
+    while(sharedBuff->maxProd < MAX){    
         //check if there are candies to remove
         sem_wait(&sharedBuff->full);
 
@@ -47,7 +46,6 @@ void* consume(void* args) {
         }
         //print out what happened with current values before they could change
         consumeCandy(candy, name, sharedBuff);
-        count++;
         sharedBuff->totalConsumedCount++;
         //buffer is done being modified
         pthread_mutex_unlock(&(sharedBuff->lock));
@@ -65,8 +63,8 @@ void* consume(void* args) {
             usleep(delay * 1000); //milliseconds
 
     }
-    pthread_mutex_unlock(&(sharedBuff->lock));
-    
+
+    return NULL;
 }
 
 // print out what happened

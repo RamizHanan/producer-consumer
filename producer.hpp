@@ -24,8 +24,7 @@ void* produce(void* args)
     // candy produced is based on the object (thread) producing it
     std::string candy = candyType->name;
     int delay = candyType->delay;
-    int count = 0;
-    while(count < MAX)
+    while(sharedBuff->maxProd < MAX - 1)
     {
 
         //check if there are slots to place candies on
@@ -61,7 +60,6 @@ void* produce(void* args)
         }
         //print out what happens before it can change
         produceCandy(candy, sharedBuff);
-        count++;
         //buffer is done being modified
         pthread_mutex_unlock(&(sharedBuff->lock));
 
@@ -69,7 +67,7 @@ void* produce(void* args)
 
         //candy has been added so a slot is full
         sem_post(&sharedBuff->full);
-
+        sharedBuff->maxProd++;
     }
 }
 
@@ -77,7 +75,7 @@ void produceCandy(std::string candy, buff* sharedBuff)
 {
     std::cout << "Belt: " << sharedBuff->beltFrogCount << " frogs + " << sharedBuff->beltEscCount << " escargots = ";
     std::cout << sharedBuff->totalBeltCount << ". produced: " << sharedBuff->totalProducedCount;
-    std::cout << "\tAdded a " << candy << "." << std::endl;
+    std::cout << "\tMizzo produced a " << candy << "." << std::endl;
 }
 
 #endif

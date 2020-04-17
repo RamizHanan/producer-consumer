@@ -95,13 +95,14 @@ int main(int argc, char **argv)
     pthread_t lucy_;
     pthread_t ethel_;
 
-    buff* buffer = (buff*) malloc(sizeof(buff));
+    buff *buffer = (buff *)malloc(sizeof(buff));
     initialize_data(buffer);
+    buffer->maxProd.store(0); //initialize
 
-    mizzo* frog = (mizzo*) malloc(sizeof(mizzo));
-    mizzo* escargot = (mizzo*) malloc(sizeof(mizzo));
-    mizzo* lucy = (mizzo*) malloc(sizeof(mizzo));
-    mizzo* ethel = (mizzo*) malloc(sizeof(mizzo));
+    mizzo *frog = (mizzo *)malloc(sizeof(mizzo));
+    mizzo *escargot = (mizzo *)malloc(sizeof(mizzo));
+    mizzo *lucy = (mizzo *)malloc(sizeof(mizzo));
+    mizzo *ethel = (mizzo *)malloc(sizeof(mizzo));
 
     frog->delay = frogTimeMS;
     frog->name = "crunchy frog bite";
@@ -119,22 +120,18 @@ int main(int argc, char **argv)
     ethel->name = "Ethel";
     ethel->shared_buffer = buffer;
 
-    pthread_create(&frogGen, NULL, produce, (void *) frog);
-    pthread_create(&escGen, NULL, produce, (void *) escargot);
-    pthread_create(&lucy_, NULL, consume, (void *) lucy);
-    pthread_create(&ethel_, NULL, consume, (void *) ethel);
+    pthread_create(&frogGen, NULL, produce, (void *)frog);
+    pthread_create(&escGen, NULL, produce, (void *)escargot);
+    pthread_create(&lucy_, NULL, consume, (void *)lucy);
+    pthread_create(&ethel_, NULL, consume, (void *)ethel);
 
-    pthread_join(frogGen,NULL);
-    pthread_join(escGen,NULL);
-    pthread_join(lucy_,NULL);
-    pthread_join(ethel_,NULL);
+    pthread_join(frogGen, NULL);
+    pthread_join(escGen, NULL);
+    pthread_join(lucy_, NULL);
+    pthread_join(ethel_, NULL);
 
-    std::cout << "Mizzo produced: " << buffer->numEscProduced << "escargot suckers. wow!" << endl;
-    std::cout << "Mizzo produced: " << buffer->numFrogProduced << "Cruncy Frog bites. wow!" << endl;
-    //crunchy
-    //escargot
-    //lucy
-    //ethel
+    std::cout << "Mizzo produced: " << buffer->numEscProduced << " Escargot Suckers. Wow!" << endl;
+    std::cout << "Mizzo produced: " << buffer->numFrogProduced << " Cruncy Frog bites. Wow!" << endl;
 }
 //initialize buffer semaphores
 void initialize_data(buff *b)
@@ -165,4 +162,3 @@ void initialize_data(buff *b)
         exit(0);
     }
 }
-
