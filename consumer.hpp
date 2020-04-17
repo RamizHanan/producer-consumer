@@ -14,8 +14,11 @@ public:
     void consumeCandy(std::string candy, void* b);
     int getNumEscConsumed(){return this->numEscConsumed;};
     int getNumFrogConsumed(){return this->numFrogConsumed;};
+    Consumer(std::string name, int delay);
 };
 
+Consumer::Consumer(std::string name, int delay)
+    : Mizzo {name,delay} {}
 /*
 -waits on full sempahore, can I consume?
 -once available , lock the buffer, consume what it needs

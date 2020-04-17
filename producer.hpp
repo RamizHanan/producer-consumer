@@ -10,11 +10,15 @@ private:
     int numFrogProduced = 0;
 
 public:
-    void *produce(void *b);
+    void* produce(void *b);
     void produceCandy(void *b);
     int getNumEscProduced() { return this->numEscProduced; };
     int getNumFrogProduced() { return this->numFrogProduced; };
+    Producer(std::string name, int delay);
 };
+
+Producer::Producer(std::string name, int delay)
+    : Mizzo {name,delay} {}
 
 /*
 produce function:

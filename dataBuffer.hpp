@@ -21,6 +21,7 @@ typedef struct thread_data
     int beltEscCount = 0;
 } buff;
 
+
 //initialize buffer semaphores
 void initialize_data(buff *b)
 {
