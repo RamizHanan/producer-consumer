@@ -2,23 +2,7 @@
 #define __CONSUMER_HPP__
 
 #include "mizzo.hpp"
-
-
-class Consumer : public Mizzo
-{
-private:
-    int numEscConsumed = 0;
-    int numFrogConsumed = 0;
-public:
-    void* consume(void* b);
-    void consumeCandy(std::string candy, void* b);
-    int getNumEscConsumed(){return this->numEscConsumed;};
-    int getNumFrogConsumed(){return this->numFrogConsumed;};
-    Consumer(std::string name, int delay);
-};
-
-Consumer::Consumer(std::string name, int delay)
-    : Mizzo {name,delay} {}
+    
 /*
 -waits on full sempahore, can I consume?
 -once available , lock the buffer, consume what it needs
@@ -29,16 +13,24 @@ Consumer::Consumer(std::string name, int delay)
 -print out who consumed
 */
 
-void* Consumer::consume(void* b) {
+void* consume(void* args) {
 
     // cast void* to buffer*
-    buff* sharedBuff = (buff*) b;
+    mizzo* worker = (mizzo*) args;
+    buff* sharedBuff = worker->shared_buffer;
+
+    int numEscConsumed = 0;
+    int numFrogConsumed = 0;
+    std::string name = worker->name;
+    int delay = worker->delay;
+    const int beltSize = 10;
+
     // declare candy, will be initialized based on what gets popped off the queue
     std::string candy;
     for (;;) {
         
         //check if there are candies to remove
-        sem_wait(sharedBuff->full);
+        sem_wait(&sharedBuff->full);
 
         // critical section
 
@@ -52,14 +44,14 @@ void* Consumer::consume(void* b) {
         // decrement either candy based on the thread (object) executing
         if (candy.compare("crunchy frog bite") == 0) {
             sharedBuff->beltFrogCount--;
-            this->numFrogConsumed++;
+            numFrogConsumed++;
         }
         else {
             sharedBuff->beltEscCount--;
-            this->numEscConsumed++;
+            numEscConsumed++;
         }
         //print out what happened with current values before they could change
-        this->consumeCandy(candy, b);
+        consumeCandy(candy, name, sharedBuff);
         //buffer is done being modified
         pthread_mutex_unlock(&(sharedBuff->lock));
 
@@ -68,23 +60,22 @@ void* Consumer::consume(void* b) {
         //check if candy was a frog bite
         if (candy.compare("crunchy frog bite") == 0)
             //if a frog bite than increment frog semaphore
-            sem_post(sharedBuff->frogEmpty);
+            sem_post(&sharedBuff->frogEmpty);
         //candy has been removed so a slot is empty
-        sem_post(sharedBuff->empty);
+        sem_post(&sharedBuff->empty);
 
-        if(this->delay > 0)
-            usleep(this->delay * 1000); //milliseconds
+        if(delay > 0)
+            usleep(delay * 1000); //milliseconds
 
     }
 
 }
 
 // print out what happened
-void Consumer::consumeCandy(std::string candy, void* b) {
-    buff* sharedBuff = (buff*) b;
+void consumeCandy(std::string candy, std::string name, buff* sharedBuff) {
     std::cout << "Belt: " << sharedBuff->beltFrogCount << " frogs + " << sharedBuff->beltEscCount << " escargots =";
     std::cout << sharedBuff->totalBeltCount << ". produced: " << sharedBuff->totalCount;
-    std::cout << "\t" << this->getName() << " consumed a " << candy << "." << std::endl;
+    std::cout << "\t" << name << " consumed a " << candy << "." << std::endl;
 }
 
 #endif 

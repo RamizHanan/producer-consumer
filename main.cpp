@@ -95,23 +95,69 @@ int main(int argc, char **argv)
     pthread_t lucy_;
     pthread_t ethel_;
 
-    buff *buffer = (buff *)malloc(sizeof(buff));
+    buff* buffer = (buff*) malloc(sizeof(buff));
+    initialize_data(buffer);
 
-    Producer *frogBite = new Producer("crunchy frog bite", frogTimeMS);
-    Producer *escargot = new Producer("escargot suckers", escTimeMS);
+    mizzo* frog = (mizzo*) malloc(sizeof(mizzo));
+    mizzo* escargot = (mizzo*) malloc(sizeof(mizzo));
+    mizzo* lucy = (mizzo*) malloc(sizeof(mizzo));
+    mizzo* ethel = (mizzo*) malloc(sizeof(mizzo));
 
-    Consumer *ethel = new Consumer("Ethel", ethelTimeMS);
-    Consumer *lucy = new Consumer("Lucy", lucyTimeMS);
+    frog->delay = frogTimeMS;
+    frog->name = "crunchy frog bite";
+    frog->shared_buffer = buffer;
 
-    pthread_create(&frogGen, NULL, (PRODUCE) &frogBite->produce, (void *)buffer);
-    pthread_create(&escGen, NULL, (PRODUCE) &escargot->produce, (void *)buffer);
-    pthread_create(&lucy_, NULL, (CONSUME) &ethel->consume, (void *)buffer);
-    pthread_create(&ethel_, NULL, (CONSUME) &lucy->consume, (void *)buffer);
+    escargot->delay = escTimeMS;
+    escargot->name = "escargot sucker";
+    escargot->shared_buffer = buffer;
+
+    lucy->delay = lucyTimeMS;
+    lucy->name = "Lucy";
+    lucy->shared_buffer = buffer;
+
+    ethel->delay = ethelTimeMS;
+    ethel->name = "Ethel";
+    ethel->shared_buffer = buffer;
+
+    pthread_create(&frogGen, NULL, produce, (void *) frog);
+    pthread_create(&escGen, NULL, produce, (void *) escargot);
+    pthread_create(&lucy_, NULL, consume, (void *) lucy);
+    pthread_create(&ethel_, NULL, consume, (void *) ethel);
 
     //crunchy
     //escargot
     //lucy
     //ethel
+}
+
+//initialize buffer semaphores
+void initialize_data(buff *b)
+{
+
+    //initialize queue
+    b->conveyorBelt = new std::queue<std::string>();
+
+    // initialize semaphores
+    // initialize empty to 10
+    if (sem_init(&b->empty, 0, 10) == -1)
+    {
+        fprintf(stderr, "Could not initialize \"empty\" semaphore. Exiting.\n");
+        exit(0);
+    }
+
+    //initialize frogEmpty to 3
+    if (sem_init(&b->frogEmpty, 0, 3) == -1)
+    {
+        fprintf(stderr, "Could not initialize \"frogEmpty\" semaphore. Exiting.\n");
+        exit(0);
+    }
+
+    //initialize full semaphore to 0
+    if (sem_init(&b->empty, 0, 0) == -1)
+    {
+        fprintf(stderr, "Could not initialize \"full\" semaphore. Exiting.\n");
+        exit(0);
+    }
 }
 
 void production_report();

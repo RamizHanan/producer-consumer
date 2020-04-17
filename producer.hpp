@@ -3,23 +3,6 @@
 
 #include "mizzo.hpp"
 
-class Producer : public Mizzo
-{
-private:
-    int numEscProduced = 0;
-    int numFrogProduced = 0;
-
-public:
-    void* produce(void *b);
-    void produceCandy(void *b);
-    int getNumEscProduced() { return this->numEscProduced; };
-    int getNumFrogProduced() { return this->numFrogProduced; };
-    Producer(std::string name, int delay);
-};
-
-Producer::Producer(std::string name, int delay)
-    : Mizzo {name,delay} {}
-
 /*
 produce function:
     1- factory waits on empty spot on conveyer belt
@@ -31,26 +14,33 @@ produce function:
 
 */
 
-void *Producer::produce(void *b)
+void* produce(void* args)
 {
 
     // cast void* to buffer*
-    buff *sharedBuff = (buff *)b;
+    mizzo* candyType = (mizzo*) args;
+    buff* sharedBuff = candyType->shared_buffer;
+
+    int numEscProduced = 0;
+    int numFrogProduced = 0;
     // candy produced is based on the object (thread) producing it
-    std::string candy = this->getName();
+    std::string candy = candyType->name;
+    int delay = candyType->delay;
+    const int beltSize = 10;
+   
     for (;;)
     {
         
         //check if there are slots to place candies on
-        sem_wait(sharedBuff->empty);
+        sem_wait(&sharedBuff->empty);
 
         // check if candy was a frog bite
         if (candy.compare("crunchy frog bite") == 0)
             //if a frog bite than decrement frog semaphore
-            sem_wait(sharedBuff->frogEmpty);
+            sem_wait(&sharedBuff->frogEmpty);
 
-        if (this->delay > 0)
-            usleep(this->delay * 1000);;
+        if (delay > 0)
+            usleep(delay * 1000);;
 
         //critical section
 
@@ -61,34 +51,33 @@ void *Producer::produce(void *b)
         sharedBuff->totalBeltCount++;
         sharedBuff->totalCount++;
         // increment either candy based on the thread (object) executing
-        if (this->getName().compare("crunchy frog bite") == 0)
+        if (candy.compare("crunchy frog bite") == 0)
         {
             sharedBuff->beltFrogCount++;
-            this->numFrogProduced++;
+            numFrogProduced++;
         }
         else
         {
             sharedBuff->beltEscCount++;
-            this->numEscProduced++;
+            numEscProduced++;
         }
         //print out what happens before it can change
-        this->produceCandy(b);
+        produceCandy(candy, sharedBuff);
         //buffer is done being modified
         pthread_mutex_unlock(&(sharedBuff->lock));
 
         //end critical section
 
         //candy has been added so a slot is full
-        sem_post(sharedBuff->full);
+        sem_post(&sharedBuff->full);
     }
 }
 
-void Producer::produceCandy(void *b)
+void produceCandy(std::string candy, buff* sharedBuff)
 {
-    buff *sharedBuff = (buff *)b;
     std::cout << "Belt: " << sharedBuff->beltFrogCount << " frogs + " << sharedBuff->beltEscCount << " escargots =";
     std::cout << sharedBuff->totalBeltCount << ". produced: " << sharedBuff->totalCount;
-    std::cout << "\tAdded a " << this->getName() << "." << std::endl;
+    std::cout << "\tAdded a " << candy << "." << std::endl;
 }
 
 #endif

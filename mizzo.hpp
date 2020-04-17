@@ -8,24 +8,12 @@
 #include <chrono>
 #include "dataBuffer.hpp"
 
+typedef struct factory {
 
-class Mizzo
-{
-protected:
-    std::string name;
+    buff* shared_buffer;
     int delay;
-    const int beltSize = 10;
+    std::string name;
 
-public:
-    Mizzo(std::string name, int delay);
-    std::string getName(){return this->name;};
-};
-
-
-
-Mizzo::Mizzo(std::string name, int delay){
-    this->name = name;
-    this->delay = delay;
-}
+} mizzo;
 
 #endif
