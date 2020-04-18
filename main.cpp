@@ -40,19 +40,10 @@ void printUsage()
 int main(int argc, char **argv)
 {
     int option = 0;
-    int ethelTimeMS;
-    int lucyTimeMS;
-    int frogTimeMS;
-    int escTimeMS;
-
-    if (argc < 2)
-    {
-        ethelTimeMS = 0;
-        lucyTimeMS = 0;
-        frogTimeMS = 0;
-        escTimeMS = 0;
-        //set default values;
-    }
+    int ethelTimeMS = 0;
+    int lucyTimeMS = 0;
+    int frogTimeMS = 0;
+    int escTimeMS = 0;
 
     while ((option = getopt(argc, argv, "E:L:f:e:")) != -1)
     {

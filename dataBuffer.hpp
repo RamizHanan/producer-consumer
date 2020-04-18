@@ -26,7 +26,6 @@ typedef struct thread_data
     int totalBeltCount = 0;
     int beltFrogCount = 0;
     int beltEscCount = 0;
-    //struct std::atomic<int> maxProd;
 } buff;
 
 #endif
