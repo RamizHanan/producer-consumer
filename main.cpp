@@ -40,7 +40,6 @@ void printUsage()
 int main(int argc, char **argv)
 {
     int option = 0;
-    int idx = -1;
     int ethelTimeMS;
     int lucyTimeMS;
     int frogTimeMS;
@@ -97,7 +96,7 @@ int main(int argc, char **argv)
 
     buff *buffer = (buff *)malloc(sizeof(buff));
     initialize_data(buffer);
-    buffer->maxProd.store(0); //initialize
+    //buffer->maxProd.store(0); //initialize
 
     mizzo *frog = (mizzo *)malloc(sizeof(mizzo));
     mizzo *escargot = (mizzo *)malloc(sizeof(mizzo));
@@ -125,13 +124,20 @@ int main(int argc, char **argv)
     pthread_create(&lucy_, NULL, consume, (void *)lucy);
     pthread_create(&ethel_, NULL, consume, (void *)ethel);
 
-    pthread_join(frogGen, NULL);
-    pthread_join(escGen, NULL);
-    pthread_join(lucy_, NULL);
-    pthread_join(ethel_, NULL);
+    sem_wait(&buffer->finished);
 
-    std::cout << "Mizzo produced: " << buffer->numEscProduced << " Escargot Suckers. Wow!" << endl;
-    std::cout << "Mizzo produced: " << buffer->numFrogProduced << " Cruncy Frog bites. Wow!" << endl;
+    std::cout << endl;
+    std::cout << "PRODUCTION REPORT" << endl;
+    std::cout << endl;
+    std::cout << "----------------------------------------" << endl;
+    std::cout << endl;
+    std::cout << "crunchy frog bite producer generated " << buffer->numFrogProduced << " candies" << endl;
+    std::cout << endl;
+    std::cout << "escargot sucker producer generated " << buffer->numEscProduced << " candies" << endl;
+    std::cout << endl;
+    std::cout << "Lucy consumed " << buffer->numLucyFrogConsumed << " crunchy frog bites + " << buffer->numLucyEscConsumed << " escargot suckers = " << (buffer->numLucyEscConsumed + buffer->numLucyFrogConsumed) << endl;
+    std::cout << endl;
+    std::cout << "Ethel consumed " << buffer->numEthelFrogConsumed << " crunchy frog bites + " << buffer->numEthelEscConsumed << " escargot suckers = " << (buffer->numEthelEscConsumed + buffer->numEthelFrogConsumed) << endl;
 }
 //initialize buffer semaphores
 void initialize_data(buff *b)
@@ -159,6 +165,13 @@ void initialize_data(buff *b)
     if (sem_init(&b->full, 0, 0) == -1)
     {
         fprintf(stderr, "Could not initialize \"full\" semaphore. Exiting.\n");
+        exit(0);
+    }
+
+    //initialize finished to 0
+    if (sem_init(&b->finished, 0, 0) == -1)
+    {
+        fprintf(stderr, "Could not initialize \"finished\" semaphore. Exiting.\n");
         exit(0);
     }
 }

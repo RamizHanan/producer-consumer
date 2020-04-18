@@ -14,16 +14,19 @@ typedef struct thread_data
     sem_t empty;
     sem_t frogEmpty;
     sem_t full;
+    sem_t finished;
     int totalProducedCount = 0;
     int totalConsumedCount = 0;
-    int numFrogConsumed = 0;
-    int numEscConsumed = 0;
+    int numLucyFrogConsumed = 0;
+    int numLucyEscConsumed = 0;
+    int numEthelFrogConsumed = 0;
+    int numEthelEscConsumed = 0;
     int numFrogProduced = 0;
     int numEscProduced = 0;
     int totalBeltCount = 0;
     int beltFrogCount = 0;
     int beltEscCount = 0;
-    struct std::atomic<int> maxProd;
+    //struct std::atomic<int> maxProd;
 } buff;
 
 #endif
