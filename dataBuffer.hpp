@@ -5,7 +5,6 @@
 #include <string>
 #include <pthread.h>
 #include <semaphore.h>
-#include <atomic>
 
 typedef struct thread_data
 {

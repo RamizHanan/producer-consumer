@@ -10,8 +10,8 @@
 #include "dataBuffer.hpp"
 
 #define BUFFER_SIZE 10
+#define FROG_LIMIT 3
 
-using namespace std;
 void initialize_data(buff *b);
 void printUsage();
 void produceReport();
@@ -34,7 +34,43 @@ void printUsage()
               << "      -e       N Specifies the number of milliseconds required to produce each everlasting escargot sucker."
               << std::endl;
 
-    cout << "Example: ./mizzo –E 3000000 –L 400000 -f 20000 -e 21134" << endl;
+    std::cout << "Example: ./mizzo –E 3000000 –L 400000 -f 20000 -e 21134" << std::endl;
+}
+
+//initialize buffer semaphores
+void initialize_data(buff *b)
+{
+    //initialize queue
+    b->conveyorBelt = new std::queue<std::string>();
+
+    // initialize semaphores
+    // initialize empty to 10
+    if (sem_init(&b->empty, 0, BUFFER_SIZE) == -1)
+    {
+        fprintf(stderr, "Could not initialize \"empty\" semaphore. Exiting.\n");
+        exit(0);
+    }
+
+    //initialize frogEmpty to 3
+    if (sem_init(&b->frogEmpty, 0, FROG_LIMIT) == -1)
+    {
+        fprintf(stderr, "Could not initialize \"frogEmpty\" semaphore. Exiting.\n");
+        exit(0);
+    }
+
+    //initialize full semaphore to 0
+    if (sem_init(&b->full, 0, 0) == -1)
+    {
+        fprintf(stderr, "Could not initialize \"full\" semaphore. Exiting.\n");
+        exit(0);
+    }
+
+    //initialize finished to 0
+    if (sem_init(&b->finished, 0, 0) == -1)
+    {
+        fprintf(stderr, "Could not initialize \"finished\" semaphore. Exiting.\n");
+        exit(0);
+    }
 }
 
 int main(int argc, char **argv)
@@ -77,6 +113,7 @@ int main(int argc, char **argv)
         default:
             // print usage and die…
             printUsage();
+            return -1;
         }
     }
 
@@ -87,7 +124,6 @@ int main(int argc, char **argv)
 
     buff *buffer = (buff *)malloc(sizeof(buff));
     initialize_data(buffer);
-    //buffer->maxProd.store(0); //initialize
 
     mizzo *frog = (mizzo *)malloc(sizeof(mizzo));
     mizzo *escargot = (mizzo *)malloc(sizeof(mizzo));
@@ -117,52 +153,23 @@ int main(int argc, char **argv)
 
     sem_wait(&buffer->finished);
 
-    std::cout << endl;
+    std::cout << std::endl << "----------------------------------------" << std::endl;
     std::cout << "PRODUCTION REPORT" << endl;
-    std::cout << endl;
-    std::cout << "----------------------------------------" << endl;
-    std::cout << endl;
-    std::cout << "crunchy frog bite producer generated " << buffer->numFrogProduced << " candies" << endl;
-    std::cout << endl;
-    std::cout << "escargot sucker producer generated " << buffer->numEscProduced << " candies" << endl;
-    std::cout << endl;
-    std::cout << "Lucy consumed " << buffer->numLucyFrogConsumed << " crunchy frog bites + " << buffer->numLucyEscConsumed << " escargot suckers = " << (buffer->numLucyEscConsumed + buffer->numLucyFrogConsumed) << endl;
-    std::cout << endl;
-    std::cout << "Ethel consumed " << buffer->numEthelFrogConsumed << " crunchy frog bites + " << buffer->numEthelEscConsumed << " escargot suckers = " << (buffer->numEthelEscConsumed + buffer->numEthelFrogConsumed) << endl;
-}
-//initialize buffer semaphores
-void initialize_data(buff *b)
-{
+    std::cout << "----------------------------------------" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Crunchy Frog Bite Producer generated " << buffer->numFrogProduced << " candies" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Escargot Sucker Producer generated " << buffer->numEscProduced << " candies" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Lucy consumed " << buffer->numLucyFrogConsumed << " Crunchy Frog Bite + " << buffer->numLucyEscConsumed << " Escargot Suckers = " << (buffer->numLucyEscConsumed + buffer->numLucyFrogConsumed) << std::endl;
+    std::cout << std::endl;
+    std::cout << "Ethel consumed " << buffer->numEthelFrogConsumed << " Crunchy Frog Bite + " << buffer->numEthelEscConsumed << " Escargot Suckers = " << (buffer->numEthelEscConsumed + buffer->numEthelFrogConsumed) << std::endl;
 
-    //initialize queue
-    b->conveyorBelt = new std::queue<std::string>();
+    free(buffer);
+    free(frog);
+    free(escargot); 
+    free(lucy);
+    free(ethel);
 
-    // initialize semaphores
-    // initialize empty to 10
-    if (sem_init(&b->empty, 0, 10) == -1)
-    {
-        fprintf(stderr, "Could not initialize \"empty\" semaphore. Exiting.\n");
-        exit(0);
-    }
-
-    //initialize frogEmpty to 3
-    if (sem_init(&b->frogEmpty, 0, 3) == -1)
-    {
-        fprintf(stderr, "Could not initialize \"frogEmpty\" semaphore. Exiting.\n");
-        exit(0);
-    }
-
-    //initialize full semaphore to 0
-    if (sem_init(&b->full, 0, 0) == -1)
-    {
-        fprintf(stderr, "Could not initialize \"full\" semaphore. Exiting.\n");
-        exit(0);
-    }
-
-    //initialize finished to 0
-    if (sem_init(&b->finished, 0, 0) == -1)
-    {
-        fprintf(stderr, "Could not initialize \"finished\" semaphore. Exiting.\n");
-        exit(0);
-    }
+    return 0;
 }

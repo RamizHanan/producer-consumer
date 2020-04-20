@@ -2,28 +2,27 @@
 #define __PRODUCER_HPP__
 
 #include "mizzo.hpp"
-#define MAX 100
+#define MAX_PRODUCED 100
+
+void *produce(void *args);
+void produceCandy(std::string candy, buff *sharedBuff);
+
 /*
-produce function:
+producer thread:
     1- factory waits on empty spot on conveyer belt
     2- once available, lock the buffer
     3- update 'enqueue'
     4- produceItem() - will go in critical section
     5- unlockBuffer
     6- increment semaphore of candy available
-
 */
-void *produce(void *args);
-void produceCandy(std::string candy, buff *sharedBuff);
 
 void *produce(void *args)
 {
-    // cast void* to buffer*
     mizzo *candyType = (mizzo *)args;
     buff *sharedBuff = candyType->shared_buffer;
-    // candy produced is based on the object (thread) producing it
     std::string candy = candyType->name;
-    int delay = candyType->delay;
+    int delayMS = candyType->delay;
     bool done = false;
     while (!done)
     {
@@ -35,14 +34,14 @@ void *produce(void *args)
             //if a frog bite than decrement frog semaphore
             sem_wait(&sharedBuff->frogEmpty);
 
-        //critical section
-
         //buffer will be modified, mutual exclusion
+        //critical section
         pthread_mutex_lock(&(sharedBuff->lock));
+
         // wait if there is a delay, simulates amount of time to produce
-        if (delay > 0)
-            usleep(delay * 1000);
-        if (sharedBuff->totalProducedCount < 100)
+        if (delayMS > 0)
+            usleep(delayMS * 1000);
+        if (sharedBuff->totalProducedCount < MAX_PRODUCED)
         {
             //place candy on belt - push onto queue (enqueue)
             sharedBuff->conveyorBelt->push(candy);
@@ -66,9 +65,9 @@ void *produce(void *args)
         else 
             done = true;
         //buffer is done being modified
-        pthread_mutex_unlock(&(sharedBuff->lock));
-
+        
         //end critical section
+        pthread_mutex_unlock(&(sharedBuff->lock));
 
         //candy has been added so a slot is full
         sem_post(&sharedBuff->full);

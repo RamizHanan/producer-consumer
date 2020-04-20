@@ -3,7 +3,12 @@
 
 #include "mizzo.hpp"
 #define MAX 100
+
+void *consume(void *args);
+void consumeCandy(std::string candy, std::string name, buff *sharedBuff);
+
 /*
+Consumer thread:
 -waits on full sempahore, can I consume?
 -once available , lock the buffer, consume what it needs
 -consume item (take care of stats), 'dequeue' from buffer
@@ -12,8 +17,6 @@
 -increment frog empty semaphore if frog removed
 -print out who consumed
 */
-void *consume(void *args);
-void consumeCandy(std::string candy, std::string name, buff *sharedBuff);
 void *consume(void *args)
 {
     // cast void* to buffer*
